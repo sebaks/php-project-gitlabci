@@ -1,0 +1,22 @@
+image: php:7.1
+
+# Select what we should cache
+cache:
+  paths:
+  - vendor/
+
+before_script:
+# Install git and unzip (composer will need them)
+- apt-get update && apt-get install -qqy git unzip zlib1g-dev
+- docker-php-ext-install zip
+# Install composer
+- curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+# Install all project dependencies
+- composer install
+# Run webserver
+- php -S localhost:8101 &>/dev/null&
+
+# Test
+test:
+  script:
+  - vendor/bin/codecept run
